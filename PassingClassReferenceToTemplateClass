@@ -1,0 +1,138 @@
+/******************************************************************************
+
+Tutorial Code for showcasing the working of Template Class and passing Class 
+reference as parameter.
+
+*******************************************************************************/
+
+#include <iostream>
+
+using namespace std;
+typedef void tVoid;
+typedef bool tBool;
+typedef char tChar;
+typedef signed char tInt8;
+typedef unsigned char tUInt8;
+typedef unsigned short int tUInt16;
+typedef signed short int tInt16;
+typedef unsigned long int tUInt32;
+typedef signed long int tInt32;
+typedef signed long int tInt;
+typedef unsigned long int tUInt;
+typedef unsigned long long int tUInt64;
+typedef signed long long int tInt64;
+typedef tInt tResult;
+typedef tBool bool_t;
+
+class RightParentClass
+{
+    public:
+    virtual tVoid v_RightExampleMethodOne()=0;
+    virtual tVoid v_RightExampleMethodTwo()=0;
+    
+};
+/*
+tVoid RightParentClass::v_RightExampleMethodOne()
+{
+    cout<<"v_RightExampleMethodOne of RightParentClass";
+}
+
+tVoid RightParentClass::v_RightExampleMethodTwo()
+{
+    cout<<"v_RightExampleMethodTwo of RightParentClass";
+}
+*/
+
+class LeftParentClass
+{ 
+public:
+    virtual tBool v_LeftExampleMethod(const tBool b_load)=0;
+};
+
+class RightDerivedClassA: public RightParentClass
+{
+public:
+    virtual tVoid v_RightExampleMethodOne();
+    virtual tVoid v_RightExampleMethodTwo();
+};
+
+
+tVoid RightDerivedClassA::v_RightExampleMethodOne()
+{
+    cout<<"v_RightExampleMethodOne of RightDerivedClassA";
+}
+
+tVoid RightDerivedClassA::v_RightExampleMethodTwo()
+{
+    cout<<"v_RightExampleMethodTwo of RightDerivedClassA";
+}
+
+class RightDerivedClassB: public RightParentClass
+{
+public:
+    virtual tVoid v_RightExampleMethodOne();
+    virtual tVoid v_RightExampleMethodTwo();
+};
+
+
+tVoid RightDerivedClassB::v_RightExampleMethodOne()
+{
+    cout<<"v_RightExampleMethodOne of RightDerivedClassB";
+}
+
+tVoid RightDerivedClassB::v_RightExampleMethodTwo()
+{
+    cout<<"v_RightExampleMethodTwo of RightDerivedClassB";
+}
+
+template<tUInt8 blockIndex>
+class LeftDerivedTemplateClass : public LeftParentClass
+{
+public:
+    LeftDerivedTemplateClass(RightParentClass& RightParentClassReference)
+    : m_RightParentClassReference(RightParentClassReference)
+    {}
+    virtual ~LeftDerivedTemplateClass() {}
+
+protected:
+    RightParentClass& m_RightParentClassReference;
+    
+    virtual tBool v_LeftExampleMethod(const tBool b_load)
+    { 
+        if(b_load)
+        {
+            m_RightParentClassReference.v_RightExampleMethodTwo();
+
+        }
+        else
+        {
+            m_RightParentClassReference.v_RightExampleMethodOne();
+        }
+    }
+    
+};
+
+int main()
+{
+    cout<<"Hello World\n";
+    RightDerivedClassA m_c_RightDerivedClassA;
+    RightDerivedClassB m_c_RightDerivedClassB;
+    
+    LeftDerivedTemplateClass<1>     m_c_ObjectOneOfLeftDerivedTemplateClass(m_c_RightDerivedClassA);
+    LeftDerivedTemplateClass<2>     m_c_ObjectTwoOfLeftDerivedTemplateClass(m_c_RightDerivedClassB);
+    
+    LeftParentClass* m_c_LeftParentClass = &m_c_ObjectOneOfLeftDerivedTemplateClass;
+    
+    m_c_LeftParentClass->v_LeftExampleMethod(1);
+    cout<<"\n";
+    m_c_LeftParentClass->v_LeftExampleMethod(0);
+    cout<<"\n";
+    m_c_LeftParentClass = &m_c_ObjectTwoOfLeftDerivedTemplateClass;
+    
+    m_c_LeftParentClass->v_LeftExampleMethod(1);
+    cout<<"\n";
+    m_c_LeftParentClass->v_LeftExampleMethod(0);
+
+    return 0;
+}
+
